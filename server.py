@@ -2,6 +2,7 @@ from textwrap import dedent
 from time import time
 from uuid import uuid4
 
+import requests
 from flask import Flask, jsonify, request
 
 from blockchain import Blockchain
@@ -18,12 +19,37 @@ justchain = Blockchain()
 
 @app.route('/mine', methods=['GET'])
 def mine():
-	return 'Mining a new block'
+	# Run the proof of work to get the next proof and mine the block
+	last_block = justchain.last_block
+	last_proof = last_block['proof']
+	proof = justchain.proof_of_work(last_proof)
+
+	# With the proof we can make a new transaction
+	justchain.new_transaction(
+		sender="0",
+		recipient=node_identifier,
+		amount=1
+	)
+
+	# Forge the new block and add a new one to the chain
+	previous_hash = justchain.hash(last_block)
+	block = justchain.create_new_block(proof, previous_hash)
+
+	response = {
+		'message': 'New block Forged',
+		'index': block['index'],
+		'transactions': block['transactions'],
+		'proof': block['proof'],
+		'previous_hash': block['previous_hash']
+	}
+
+
+	return jsonify(response), 200
 
 @app.route('/transactions/new', methods=['POST'])
 def new_transaction():
 	values = request.get_json()
-
+	print(values)
 	# Checking if the required fields are in the POST request
 	required = ['sender', 'recipient', 'amount']
 	if not all(k in values for k in required):

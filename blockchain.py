@@ -1,6 +1,7 @@
 import hashlib
 import json
 
+from urllib.parse import urlparse
 from time import time
 from uuid import uuid4
 
@@ -8,6 +9,7 @@ class Blockchain(object):
 	def __init__(self):
 		self.chain = []
 		self.current_transactions = []
+		self.nodes = set()
 
 		# Create the genesis block
 		self.create_new_block(previous_hash=1, proof=100)
@@ -71,6 +73,8 @@ class Blockchain(object):
 			proof += 1
 
 		return proof
+
+
 
 	@staticmethod
 	def valid_proof(last_proof, proof):
