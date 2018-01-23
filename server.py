@@ -46,6 +46,40 @@ def mine():
 
 	return jsonify(response), 200
 
+@app.route('/nodes/register', methods=['POST'])
+def register_nodes():
+	values = request.get_json()
+
+	nodes = values.get('nodes')
+	if nodes is None:
+		return "Error: please supply a valid list of nodes", 400
+
+	for node in nodes:
+		justchain.register_node(node)
+
+	response = {
+		'message': 'New nodes have been added',
+		'total_nodes': list(justchain.nodes),
+	}
+
+	return jsonify(response), 201
+
+@app.route('/nodes/resolve', methods=['GET'])
+def consensus():
+	replaced = justchain.resolve_conflicts()
+
+	if replaced:
+		response = {
+			'message': 'Our chain was replaced',
+			'new_chain': justchain.chain
+		}
+	else:
+		response = {
+			'message': 'Our chain is authoratative',
+			'chain': justchain.chain
+		}
+
+	return jsonify(response), 200
 @app.route('/transactions/new', methods=['POST'])
 def new_transaction():
 	values = request.get_json()

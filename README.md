@@ -24,8 +24,8 @@ Third, run the node of the blockchain.
 
 In the repositorie exists 2 main scripts:
 
-* server.py, this is the script to run the node.
-* blockchain.py, this script contains all the methods to execute the blockchain commands.
+* `server.py`, this is the script to run the node.
+* `blockchain.py`, this script contains all the methods to execute the blockchain commands.
 
 # Checklist
 
